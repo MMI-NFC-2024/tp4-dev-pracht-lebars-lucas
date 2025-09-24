@@ -1,0 +1,101 @@
+---
+import PlotFigure from "../components/PlotFigure.astro";
+import Layout from "../layouts/Layout.astro";
+import * as Plot from "@observablehq/plot";
+import weather from "../assets/weather.json";
+---
+
+<Layout>
+
+    <h1 class="text-2xl">Filtre Weather</h1>
+
+    <label for="location">Filtrer par ville :</label>
+    <select name="location" id="location">
+        <option value="">All locations</option>
+        <option value="Seattle">Seattle</option>
+        <option value="New York">New York</option>
+    </select>
+    
+    <label for="weather">Filtrer par météo :</label>
+    <select name="weather" id="weather">
+        <option value="">All weather</option>
+        <option value="sun">Sun</option>
+        <option value="rain">Rain</option>
+        <option value="drizzle">Drizzle</option>
+        <option value="snow">Snow</option>
+    </select>
+    
+    <label for="season">Filtrer par saison :</label>
+    <select name="season" id="season">
+        <option value="">All seasons</option>
+        <option value="spring">Printemps</option>
+        <option value="summer">Été</option>
+        <option value="fall">Automne</option>
+        <option value="winter">Hiver</option>
+    </select>
+    
+    <div id="myplot"></div>
+<script>
+  // Importe la librairie Plot d'ObservableHQ
+  import * as Plot from "@observablehq/plot";
+  // Importe les données météo depuis un fichier JSON
+  import weather from "../assets/weather.json";
+
+  // Récupère les éléments select
+  const selectLocation = document.querySelector("#location");
+  const selectWeather = document.querySelector("#weather");
+  const selectSeason = document.querySelector("#season");
+
+  // Fonction pour obtenir la saison à partir de la date
+  function getSeason(dateString) {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1; // 1-12
+    if (month >= 3 && month <= 5) return "spring";
+    if (month >= 6 && month <= 8) return "summer";
+    if (month >= 9 && month <= 11) return "fall";
+    return "winter";
+  }
+
+  // Fonction pour afficher le graphique
+  function renderPlot() {
+    // Récupère les valeurs sélectionnées
+    const location = selectLocation.value;
+    const weatherType = selectWeather.value;
+    const season = selectSeason.value;
+
+    // Sélectionne la div où le graphique sera affiché
+    const div = document.querySelector("#myplot");
+ 
+    // Vide le contenu précédent de la div
+    div.innerHTML = "";
+ 
+    // Crée le graphique avec Plot
+    const plot = Plot.plot({
+      marks: [
+        // Ajoute les points du graphique, filtrés selon tous les critères
+        Plot.dot(weather.filter(d => 
+          (location === "" || d.location === location) &&
+          (weatherType === "" || d.weather === weatherType) &&
+          (season === "" || getSeason(d.date) === season)
+        ), {
+          x: "temp_max", // Axe X : température maximale
+          y: "precipitation", // Axe Y : précipitations
+          stroke: "weather", // Couleur selon le type de météo
+        }),
+      ],
+    });
+    // Ajoute le graphique à la div
+    div.appendChild(plot);
+  }
+
+  // Ajoute des écouteurs d'événement pour tous les selects
+  selectLocation.addEventListener("change", renderPlot);
+  selectWeather.addEventListener("change", renderPlot);
+  selectSeason.addEventListener("change", renderPlot);
+
+  // Affiche le graphique au chargement de la page
+  renderPlot();
+
+</script>
+
+</Layout>

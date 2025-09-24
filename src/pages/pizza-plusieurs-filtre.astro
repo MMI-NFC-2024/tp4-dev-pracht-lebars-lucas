@@ -1,0 +1,99 @@
+---
+import PlotFigure from "../components/PlotFigure.astro";
+import Layout from "../layouts/Layout.astro";
+import * as Plot from "@observablehq/plot";
+import pizza from "../assets/pizza.json";
+---
+
+<Layout>
+
+    <h1 class="text-2xl">Filtre Pizza</h1>
+
+    <label for="category">Filtrer par catégorie :</label>
+    <select name="category" id="category">
+        <option value="">All categories</option>
+        <option value="Classic">Classic</option>
+        <option value="Supreme">Supreme</option>
+        <option value="Veggie">Veggie</option>
+        <option value="Chicken">Chicken</option>
+    </select>
+    
+    <label for="day">Filtrer par jour :</label>
+    <select name="day" id="day">
+        <option value="">All days</option>
+        <option value="Monday">Lundi</option>
+        <option value="Tuesday">Mardi</option>
+        <option value="Wednesday">Mercredi</option>
+        <option value="Thursday">Jeudi</option>
+        <option value="Friday">Vendredi</option>
+        <option value="Saturday">Samedi</option>
+        <option value="Sunday">Dimanche</option>
+    </select>
+    
+    <label for="priceRange">Filtrer par gamme de prix :</label>
+    <select name="priceRange" id="priceRange">
+        <option value="">All prices</option>
+        <option value="low">Pas cher (&lt; 15€)</option>
+        <option value="medium">Moyen (15-20€)</option>
+        <option value="high">Cher (&gt; 20€)</option>
+    </select>
+    
+    <div id="myplot"></div>
+<script>
+  // Importe la librairie Plot d'ObservableHQ
+  import * as Plot from "@observablehq/plot";
+  // Importe les données pizza depuis un fichier JSON
+  import pizza from "../assets/pizza.json";
+
+  // Récupère les éléments select
+  const selectCategory = document.querySelector("#category");
+  const selectDay = document.querySelector("#day");
+  const selectPriceRange = document.querySelector("#priceRange");
+
+  // Fonction pour afficher le graphique
+  function renderPlot() {
+    // Récupère les valeurs sélectionnées
+    const category = selectCategory.value;
+    const day = selectDay.value;
+    const priceRange = selectPriceRange.value;
+
+    // Sélectionne la div où le graphique sera affiché
+    const div = document.querySelector("#myplot");
+ 
+    // Vide le contenu précédent de la div
+    div.innerHTML = "";
+ 
+    // Crée le graphique avec Plot
+    const plot = Plot.plot({
+      marks: [
+        // Ajoute les points du graphique, filtrés selon tous les critères
+        Plot.dot(pizza.filter(d => 
+          (category === "" || d.category === category) &&
+          (day === "" || d.day_of_week === day) &&
+          (priceRange === "" || 
+            (priceRange === "low" && d.price < 15) ||
+            (priceRange === "medium" && d.price >= 15 && d.price <= 20) ||
+            (priceRange === "high" && d.price > 20)
+          )
+        ), {
+          x: "price", // Axe X : prix
+          y: "orders", // Axe Y : nombre de commandes
+          stroke: "category", // Couleur selon la catégorie
+        }),
+      ],
+    });
+    // Ajoute le graphique à la div
+    div.appendChild(plot);
+  }
+
+  // Ajoute des écouteurs d'événement pour tous les selects
+  selectCategory.addEventListener("change", renderPlot);
+  selectDay.addEventListener("change", renderPlot);
+  selectPriceRange.addEventListener("change", renderPlot);
+
+  // Affiche le graphique au chargement de la page
+  renderPlot();
+
+</script>
+
+</Layout>

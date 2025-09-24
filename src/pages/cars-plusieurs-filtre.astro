@@ -1,0 +1,93 @@
+---
+import PlotFigure from "../components/PlotFigure.astro";
+import Layout from "../layouts/Layout.astro";
+import * as Plot from "@observablehq/plot";
+import cars from "../assets/cars.json";
+---
+
+<Layout>
+
+    <h1 class="text-2xl">Filtre Cars</h1>
+
+    <label for="cylinders">Filtrer par cylindres :</label>
+    <select name="cylinders" id="cylinders">
+        <option value="">All cylinders</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+    </select>
+    
+    <label for="year">Filtrer par décennie :</label>
+    <select name="year" id="year">
+        <option value="">All years</option>
+        <option value="70">70s</option>
+        <option value="80">80s</option>
+    </select>
+    
+    <label for="economy">Filtrer par consommation :</label>
+    <select name="economy" id="economy">
+        <option value="">All economy</option>
+        <option value="low">Faible (&lt; 20 mpg)</option>
+        <option value="high">Élevée (≥ 20 mpg)</option>
+    </select>
+    
+    <div id="myplot"></div>
+<script>
+  // Importe la librairie Plot d'ObservableHQ
+  import * as Plot from "@observablehq/plot";
+  // Importe les données des voitures depuis un fichier JSON
+  import cars from "../assets/cars.json";
+
+  // Récupère les éléments select
+  const selectCylinders = document.querySelector("#cylinders");
+  const selectYear = document.querySelector("#year");
+  const selectEconomy = document.querySelector("#economy");
+
+  // Fonction pour afficher le graphique
+  function renderPlot() {
+    // Récupère les valeurs sélectionnées
+    const cylinders = selectCylinders.value;
+    const year = selectYear.value;
+    const economy = selectEconomy.value;
+
+    // Sélectionne la div où le graphique sera affiché
+    const div = document.querySelector("#myplot");
+ 
+    // Vide le contenu précédent de la div
+    div.innerHTML = "";
+ 
+    // Crée le graphique avec Plot
+    const plot = Plot.plot({
+      marks: [
+        // Ajoute les points du graphique, filtrés selon tous les critères
+        Plot.dot(cars.filter(d => 
+          (cylinders === "" || d.cylinders == cylinders) &&
+          (year === "" || Math.floor(d.year / 10) * 10 == year) &&
+          (economy === "" || 
+            (economy === "low" && d["economy (mpg)"] < 20) ||
+            (economy === "high" && d["economy (mpg)"] >= 20)
+          )
+        ), {
+          x: "power (hp)", // Axe X : puissance
+          y: "economy (mpg)", // Axe Y : consommation
+          stroke: "cylinders", // Couleur selon le nombre de cylindres
+        }),
+      ],
+    });
+    // Ajoute le graphique à la div
+    div.appendChild(plot);
+  }
+
+  // Ajoute des écouteurs d'événement pour tous les selects
+  selectCylinders.addEventListener("change", renderPlot);
+  selectYear.addEventListener("change", renderPlot);
+  selectEconomy.addEventListener("change", renderPlot);
+
+  // Affiche le graphique au chargement de la page
+  renderPlot();
+
+</script>
+
+</Layout>
