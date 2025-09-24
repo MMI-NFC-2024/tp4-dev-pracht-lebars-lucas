@@ -1,33 +1,439 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
-import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
 ---
 
 <Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
-      marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
-        }),
-      ],
-    }}
-  />
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">
+        ✨ Nouveau Lab de Visualisation
+      </div>
+      <h1 class="hero-title">
+        Explorez vos données avec 
+        <span class="gradient-text">Observable Plot</span>
+      </h1>
+      <p class="hero-description">
+        Plongez dans l'univers de la data visualisation interactive avec notre collection 
+        de graphiques intelligents et filtres dynamiques. Des pingouins aux pizzas, 
+        découvrez comment transformer vos données en insights visuels captivants.
+      </p>
+      <div class="hero-buttons">
+        <a href="/Penguin-filtre" class="btn-primary">
+          🐧 Commencer l'exploration
+        </a>
+        <a href="/alphabet-plusieurs-filtre" class="btn-secondary">
+          📚 Voir la démo
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card">
+        <div class="demo-plot" id="demo-plot"></div>
+      </div>
+    </div>
+  </div>
 
-  <div id="myplot"></div>
+  <!-- Features Section -->
+  <div class="features-section">
+    <h2 class="section-title">🎯 Fonctionnalités Avancées</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🐧</div>
+        <h3>Données Penguins</h3>
+        <p>Analysez les caractéristiques des manchots avec des filtres par espèce, île et sexe</p>
+        <a href="/penguin-plusieurs-filtre" class="feature-link">Explorer →</a>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🚗</div>
+        <h3>Analyse Automobile</h3>
+        <p>Découvrez les relations entre puissance, consommation et caractéristiques des voitures</p>
+        <a href="/cars-plusieurs-filtre" class="feature-link">Analyser →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌤️</div>
+        <h3>Météorologie</h3>
+        <p>Explorez les données climatiques avec des filtres par ville, saison et conditions</p>
+        <a href="/weather-plusieurs-filtre" class="feature-link">Découvrir →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🍕</div>
+        <h3>Ventes Pizza</h3>
+        <p>Analysez les tendances de vente par catégorie, jour et gamme de prix</p>
+        <a href="/pizza-plusieurs-filtre" class="feature-link">Examiner →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔤</div>
+        <h3>Fréquences Alphabet</h3>
+        <p>Visualisez la distribution des lettres avec des filtres par type et fréquence</p>
+        <a href="/alphabet-plusieurs-filtre" class="feature-link">Étudier →</a>
+      </div>
+
+      <div class="feature-card special">
+        <div class="feature-icon">✨</div>
+        <h3>Filtrage Intelligent</h3>
+        <p>Tous nos graphiques disposent de filtres multiples en temps réel pour une exploration approfondie</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Section -->
+  <div class="cta-section">
+    <div class="cta-content">
+      <h2>� Prêt à explorer vos données ?</h2>
+      <p>Commencez votre voyage dans la data visualisation interactive dès maintenant</p>
+      <a href="/Penguin-filtre" class="btn-cta">
+        Commencer l'exploration
+      </a>
+    </div>
+  </div>
+</Layout>
+
 <script type="module">
-
 import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
 
-const plot = Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: Math.random})).plot();
-const div = document.querySelector("#myplot");
-div.append(plot);
+// Créer une démo animée pour la hero section
+function createDemoPlot() {
+  const data = Array.from({length: 20}, (_, i) => ({
+    x: Math.random() * 10,
+    y: Math.random() * 10,
+    category: ['A', 'B', 'C'][Math.floor(Math.random() * 3)]
+  }));
 
+  const plot = Plot.plot({
+    width: 300,
+    height: 200,
+    marks: [
+      Plot.dot(data, {
+        x: "x",
+        y: "y",
+        fill: "category",
+        r: 4
+      })
+    ],
+    color: {
+      range: ["#3b82f6", "#f59e0b", "#10b981"]
+    }
+  });
+
+  const container = document.querySelector("#demo-plot");
+  if (container) {
+    container.appendChild(plot);
+  }
+}
+
+// Animation des cartes
+function animateCards() {
+  const cards = document.querySelectorAll('.feature-card');
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+    card.classList.add('animate-in');
+  });
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+  createDemoPlot();
+  animateCards();
+});
 </script>
 
-</Layout>
+<style>
+  /* === HERO SECTION === */
+  .hero-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    min-height: 70vh;
+    margin-bottom: 6rem;
+  }
+
+  .hero-content {
+    animation: slideInLeft 0.8s ease-out;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--text-primary), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-description {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    max-width: 90%;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary, .btn-secondary, .btn-cta {
+    padding: 1rem 2rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary, .btn-cta {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary:hover, .btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-secondary {
+    background: var(--background-card);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+  }
+
+  /* === HERO VISUAL === */
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    animation: slideInRight 0.8s ease-out;
+  }
+
+  .floating-card {
+    background: var(--background-card);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  /* === FEATURES SECTION === */
+  .features-section {
+    margin-bottom: 6rem;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 4rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .feature-card {
+    background: var(--background-card);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .feature-card.animate-in {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .feature-card.special {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+  }
+
+  .feature-card.special h3,
+  .feature-card.special p {
+    color: white;
+  }
+
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .feature-link:hover {
+    color: var(--primary-dark);
+    transform: translateX(5px);
+  }
+
+  /* === CTA SECTION === */
+  .cta-section {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: var(--radius-lg);
+    padding: 4rem 2rem;
+    text-align: center;
+    color: white;
+    margin-bottom: 4rem;
+  }
+
+  .cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .btn-cta {
+    background: white;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+  }
+
+  /* === ANIMATIONS === */
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 1024px) {
+    .hero-section {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      max-width: 100%;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-content h2 {
+      font-size: 2rem;
+    }
+
+    .btn-primary, .btn-secondary, .btn-cta {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
