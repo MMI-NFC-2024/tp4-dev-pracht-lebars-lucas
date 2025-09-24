@@ -6,9 +6,12 @@ import penguins from "../assets/penguins.json";
 ---
 
 <Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
+ <div id="myplot"></div>
+<script>
+import * as Plot from "@observablehq/plot";
+import penguins from "../assets/penguins.json";
+
+const plot = Plot.plot({
       marks: [
         Plot.dot(penguins, {
           x: "culmen_length_mm",
@@ -16,18 +19,12 @@ import penguins from "../assets/penguins.json";
           stroke: "species",
         }),
       ],
-    }}
-  />
-
-  <div id="myplot"></div>
-<script type="module">
-
-import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
-
-const plot = Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: Math.random})).plot();
+    });
 const div = document.querySelector("#myplot");
 div.append(plot);
 
 </script>
+
+
 
 </Layout>

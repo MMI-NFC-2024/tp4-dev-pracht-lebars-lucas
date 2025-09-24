@@ -1,0 +1,65 @@
+---
+import PlotFigure from "../components/PlotFigure.astro";
+import Layout from "../layouts/Layout.astro";
+import * as Plot from "@observablehq/plot";
+import penguins from "../assets/penguins.json";
+---
+
+<Layout>
+
+    <h1 class="text-2xl">Filtre Penguins</h1>
+    
+    <label for="species">Filtrer par espèce :</label>
+    <select name="species" id="species">
+        <option value="">All species</option>
+        <option value="Adelie">Adelie</option>
+        <option value="Chinstrap">Chinstrap</option>
+        <option value="Gentoo">Gentoo</option>
+    </select>
+    
+    <div id="myplot"></div>
+<script>
+  // Importe la librairie Plot d'ObservableHQ
+  import * as Plot from "@observablehq/plot";
+  // Importe les données des manchots depuis un fichier JSON
+  import penguins from "../assets/penguins.json";
+
+  // Récupère l'élément select pour choisir l'espèce
+  const selectSpecies = document.querySelector("#species");
+
+  // Fonction pour afficher le graphique
+  function renderPlot() {
+    // Récupère l'espèce sélectionnée
+    const species = selectSpecies.value;
+
+    // Sélectionne la div où le graphique sera affiché
+    const div = document.querySelector("#myplot");
+ 
+    // Vide le contenu précédent de la div
+    div.innerHTML = "";
+ 
+    // Crée le graphique avec Plot
+    const plot = Plot.plot({
+      marks: [
+        // Ajoute les points du graphique, filtrés selon l'espèce choisie
+        Plot.dot(penguins.filter(d => species === "" || d.species === species), {
+          x: "culmen_length_mm", // Axe X : longueur du bec
+          y: "culmen_depth_mm", // Axe Y : profondeur du bec
+          stroke: "species", // Couleur selon l'espèce
+            // Filtre selon l'espèce sélectionnée
+        }),
+      ],
+    });
+    // Ajoute le graphique à la div
+    div.appendChild(plot);
+  }
+
+  // Ajoute un écouteur d'événement pour le changement d'espèce (appel 'renderPlot')
+  selectSpecies.addEventListener("change", renderPlot);
+
+  // Affiche le graphique au chargement de la page
+  renderPlot();
+
+</script>
+
+</Layout>

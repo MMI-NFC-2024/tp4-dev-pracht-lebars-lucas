@@ -1,0 +1,65 @@
+---
+---
+
+<nav>
+  <ul>
+    <li><a href="/">Accueil</a></li>
+    <li><a href="/simple-penguins">Penguins Simples</a></li>
+    <li><a href="/Penguin-filtre">Filtre Penguins</a></li>
+  </ul>
+</nav>
+
+<style>
+  nav {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 2rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 2rem;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: #495057;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  a:hover {
+    background-color: #007bff;
+    color: white;
+  }
+
+  /* Style pour le lien actif */
+  a[aria-current="page"] {
+    background-color: #007bff;
+    color: white;
+  }
+</style>
+
+<script>
+  // Script pour marquer le lien actif
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('nav a');
+    
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.setAttribute('aria-current', 'page');
+      }
+    });
+  });
+</script>
