@@ -1,0 +1,110 @@
+---
+import PlotFigure from "../components/PlotFigure.astro";
+import Layout from "../layouts/Layout.astro";
+import * as Plot from "@observablehq/plot";
+import alphabet from "../assets/alphabet.json";
+---
+
+<Layout>
+
+    <h1 class="text-2xl">Filtre Alphabet</h1>
+
+    <label for="frequency">Filtrer par fréquence :</label>
+    <select name="frequency" id="frequency">
+        <option value="">All frequencies</option>
+        <option value="high">Très fréquent (&gt; 0.06)</option>
+        <option value="medium">Moyen (0.02 - 0.06)</option>
+        <option value="low">Rare (&lt; 0.02)</option>
+    </select>
+    
+    <label for="type">Filtrer par type :</label>
+    <select name="type" id="type">
+        <option value="">All types</option>
+        <option value="vowel">Voyelles</option>
+        <option value="consonant">Consonnes</option>
+    </select>
+    
+    <label for="range">Filtrer par plage alphabétique :</label>
+    <select name="range" id="range">
+        <option value="">All letters</option>
+        <option value="A-H">A-H</option>
+        <option value="I-P">I-P</option>
+        <option value="Q-Z">Q-Z</option>
+    </select>
+    
+    <div id="myplot"></div>
+<script>
+  // Importe la librairie Plot d'ObservableHQ
+  import * as Plot from "@observablehq/plot";
+  // Importe les données alphabet depuis un fichier JSON
+  import alphabet from "../assets/alphabet.json";
+
+  // Récupère les éléments select
+  const selectFrequency = document.querySelector("#frequency");
+  const selectType = document.querySelector("#type");
+  const selectRange = document.querySelector("#range");
+
+  // Fonction pour déterminer si une lettre est une voyelle
+  function isVowel(letter) {
+    return ['A', 'E', 'I', 'O', 'U', 'Y'].includes(letter);
+  }
+
+  // Fonction pour déterminer la plage alphabétique
+  function getAlphabetRange(letter) {
+    if (letter >= 'A' && letter <= 'H') return 'A-H';
+    if (letter >= 'I' && letter <= 'P') return 'I-P';
+    return 'Q-Z';
+  }
+
+  // Fonction pour afficher le graphique
+  function renderPlot() {
+    // Récupère les valeurs sélectionnées
+    const frequency = selectFrequency.value;
+    const type = selectType.value;
+    const range = selectRange.value;
+
+    // Sélectionne la div où le graphique sera affiché
+    const div = document.querySelector("#myplot");
+ 
+    // Vide le contenu précédent de la div
+    div.innerHTML = "";
+ 
+    // Crée le graphique avec Plot
+    const plot = Plot.plot({
+      marks: [
+        // Ajoute les barres du graphique, filtrées selon tous les critères
+        Plot.barY(alphabet.filter(d => 
+          (frequency === "" || 
+            (frequency === "high" && d.frequency > 0.06) ||
+            (frequency === "medium" && d.frequency >= 0.02 && d.frequency <= 0.06) ||
+            (frequency === "low" && d.frequency < 0.02)
+          ) &&
+          (type === "" || 
+            (type === "vowel" && isVowel(d.letter)) ||
+            (type === "consonant" && !isVowel(d.letter))
+          ) &&
+          (range === "" || getAlphabetRange(d.letter) === range)
+        ), {
+          x: "letter", // Axe X : lettre
+          y: "frequency", // Axe Y : fréquence
+          fill: d => isVowel(d.letter) ? "voyelle" : "consonne", // Couleur selon voyelle/consonne
+        }),
+      ],
+      x: {label: "Lettre"},
+      y: {label: "Fréquence"}
+    });
+    // Ajoute le graphique à la div
+    div.appendChild(plot);
+  }
+
+  // Ajoute des écouteurs d'événement pour tous les selects
+  selectFrequency.addEventListener("change", renderPlot);
+  selectType.addEventListener("change", renderPlot);
+  selectRange.addEventListener("change", renderPlot);
+
+  // Affiche le graphique au chargement de la page
+  renderPlot();
+
+</script>
+
+</Layout>
